@@ -161,12 +161,26 @@ body{
 }
 .overlay.open{ display:block; }
 
-.cart-panel{
-  position:fixed; top:0; right:-100%; width:350px; height:100%;
-  background:var(--bg); z-index:300; transition:0.4s;
-  display:flex; flex-direction:column; border-left:1px solid var(--border);
+.cart-panel {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 350px;
+  height: 100%;
+  background: var(--bg);
+  transition: 0.4s;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  border-left:1px solid var(--border);
 }
-.cart-panel.open{ right:0; }
+.cart-panel.open{
+  right:0;
+}
+
+#deliveryModal{
+  right:-100%;
+}
 
 /* Delivery Modal Specific fixes */
 #deliveryOverlay { z-index: 400; }
@@ -224,11 +238,43 @@ body{
 
 footer{ padding:20px; text-align:center; color:var(--txt2); }
 
+/* all your CSS above */
+
+/* MOBILE */
 @media(max-width:480px){
-  .search-wrap input{ width:150px; }
-  .cart-panel{ width:100%; }
+
+  .header-inner{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .header-right{
+    width:100%;
+    justify-content:space-between;
+  }
+
+  .search-wrap input{
+    width:100%;
+  }
+
+  .cart-panel{
+    width:100%;
+  }
+
 }
+
+/* SCROLLBAR */
+::-webkit-scrollbar{
+  width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+  background:var(--pink);
+  border-radius:10px;
+}
+
 </style>
+
 </head>
 
 <body>
@@ -291,7 +337,9 @@ footer{ padding:20px; text-align:center; color:var(--txt2); }
 </div>
 
 <div class="overlay" id="deliveryOverlay" onclick="closeDeliveryModal()"></div>
+
 <div class="cart-panel" id="deliveryModal">
+ 
     <div class="cart-header">
         <h3>🚚 Delivery Details</h3>
         <button class="close-btn" onclick="closeDeliveryModal()"><i class="fas fa-times"></i></button>
@@ -402,9 +450,14 @@ function changeQty(id,delta){
   updateCartUI();
 }
 
-function toggleCart(){ 
-  document.getElementById('cartPanel').classList.toggle('open'); 
-  document.getElementById('overlay').classList.toggle('open'); 
+function toggleCart(){
+
+  document.getElementById('cartPanel').classList.toggle('open');
+
+  document.getElementById('overlay').classList.toggle('open');
+
+  updateCartUI();
+
 }
 function closeCart(){ 
   document.getElementById('cartPanel').classList.remove('open'); 
@@ -412,41 +465,83 @@ function closeCart(){
 }
 
 function openDeliveryModal() {
-    if(Object.keys(cart).length === 0) { alert("Cart is empty!"); return; }
-    closeCart(); 
+    if(Object.keys(cart).length === 0) {
+        alert("Cart is empty!");
+        return;
+    }
+
+    closeCart();
     document.getElementById('deliveryModal').style.right = '0';
-    document.getElementById('deliveryOverlay').style.display = 'block';
+    document.getElementById('deliveryOverlay').classList.add('open');
 }
 
 function closeDeliveryModal() {
     document.getElementById('deliveryModal').style.right = '-100%';
-    document.getElementById('deliveryOverlay').style.display = 'none';
+    document.getElementById('deliveryOverlay').classList.remove('open');
 }
 
 function confirmOrder() {
+
     const keys = Object.keys(cart);
+
     const name = document.getElementById('dlvName').value;
     const phone = document.getElementById('dlvPhone').value;
     const address = document.getElementById('dlvAddress').value;
     const city = document.getElementById('dlvCity').value;
     const notes = document.getElementById('dlvNotes').value;
 
-    if (!name || !phone || !address) { alert("Please fill all details!"); return; }
+    if (!name || !phone || !address) {
+        alert("Please fill all details!");
+        return;
+    }
 
     let itemDetails = "";
     let total = 0;
+
     keys.forEach(k => {
         itemDetails += `• ${cart[k].name} (x${cart[k].qty}) - Rs ${cart[k].price * cart[k].qty}\n`;
         total += cart[k].price * cart[k].qty;
     });
 
-    const whatsappNumber = "923001234567"; // CHANGE TO YOUR NUMBER
-    const message = `*--- NEW ORDER ---*\n\n*Name:* ${name}\n*Phone:* ${phone}\n*Address:* ${address}, ${city}\n*Notes:* ${notes || "None"}\n\n*Items:*\n${itemDetails}\n*Total: Rs ${total}*`;
+    // 🎯 NEW FEATURES
+    const orderID = "CT" + Math.floor(Math.random() * 100000);
+    const deliveryTime = "45–60 minutes";
+    const orderDate = new Date().toLocaleString();
 
-    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
-    
-    cart = {}; updateCartUI(); closeDeliveryModal();
-    showToast("Order Sent! 🚀");
+    const whatsappNumber = "923001234567";
+
+    const message = `
+🍰 *CAKETIME ORDER CONFIRMED*
+
+🆔 Order ID: ${orderID}
+📅 Date: ${orderDate}
+
+👤 Name: ${name}
+📞 Phone: ${phone}
+🏠 Address: ${address}, ${city}
+
+🍽 Items:
+${itemDetails}
+
+💰 Total: Rs ${total}
+
+🚚 Delivery Time: ${deliveryTime}
+
+📝 Notes: ${notes || "None"}
+
+Thank you for ordering ❤️
+`;
+
+    window.open(
+        `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`,
+        "_blank"
+    );
+
+    cart = {};
+    updateCartUI();
+    closeDeliveryModal();
+
+    showToast("Order Sent 🚀");
 }
 
 function toggleDark(){
@@ -459,69 +554,7 @@ function showToast(msg){
   t.innerText = msg; t.style.display = 'block';
   setTimeout(()=> t.style.display = 'none', 2500);
 }
-function showToast(msg){
 
-  const toast = document.getElementById('toast');
-
-  toast.innerText = msg;
-
-  toast.style.display = 'block';
-
-  setTimeout(()=>{
-    toast.style.display = 'none';
-  },2500);
-}
-
-async function confirmOrder() {
-
-  const keys = Object.keys(cart);
-
-  if (keys.length === 0) {
-    alert("Cart is empty!");
-    return;
-  }
-
-  const orderItems = keys.map(k => ({
-    id: cart[k].id,
-    name: cart[k].name,
-    price: cart[k].price,
-    qty: cart[k].qty
-  }));
-
-  const total = keys.reduce((sum, k) =>
-    sum + (cart[k].price * cart[k].qty), 0
-  );
-
-  try {
-
-    const res = await fetch("https://YOUR-RENDER-URL.onrender.com/place-order", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        items: orderItems,
-        total: total
-      })
-    });
-
-    const data = await res.json();
-
-    alert(data.message);
-
-    cart = {};
-    updateCartUI();
-    closeCart();
-
-  } catch (err) {
-
-    console.error(err);
-    alert("Order failed ❌");
-
-  }
-}
-
-renderItems();
 renderItems();
 </script>
 </body>

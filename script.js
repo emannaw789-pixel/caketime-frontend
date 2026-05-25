@@ -82,6 +82,11 @@ function confirmOrder() {
             cart
         })
     });
+   /* =======================
+   OPEN WHATSAPP
+======================= */
+const url = "https://wa.me/" + WHATSAPP_PHONE + "?text=" + message;
+window.open(url, "_blank");
 
     /* =======================
        BUILD WHATSAPP MESSAGE

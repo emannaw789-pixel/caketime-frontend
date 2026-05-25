@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CakeTime PRO 🍰</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+/* --- 1. THE THEME & CORE STYLES --- */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+:root{
+  --pink:#D4537E;
+  --pink-dark:#99244F;
+  --pink-light:#FBEAF0;
+  --bg:#ffffff;
+  --bg2:#f7f7f7;
+  --txt:#1a1a1a;
+  --txt2:#666;
+  --border:rgba(0,0,0,0.1);
+}
+
+body.dark{
+  --bg:#1a1a1a;
+  --bg2:#252525;
+  --txt:#f0f0f0;
+  --txt2:#aaa;
+  --border:rgba(255,255,255,0.1);
+}
+
+body{
+  font-family:'Segoe UI',sans-serif;
+  background:var(--bg);
+  color:var(--txt);
+  transition:0.3s;
+}
+
+/* --- 2. HEADER & NAVIGATION --- */
+.header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:linear-gradient(135deg,#99244F,#D4537E);
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+
+.header-inner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 20px;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.logo{
+  color:#fff;
+  font-size:24px;
+  font-weight:800;
+}
+
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.search-wrap{
+  position:relative;
+}
+
+.search-wrap input{
+  width:220px;
+  padding:10px 14px 10px 36px;
+  border:none;
+  border-radius:30px;
+  outline:none;
+  background:rgba(255,255,255,0.2);
+  color:#fff;
+}
+
+.search-wrap input::placeholder{ color:#eee; }
+.search-wrap i{ position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#fff; }
+
+.cart-btn, .dark-btn{
+  border:none; cursor:pointer; border-radius:30px;
+  background:rgba(255,255,255,0.2); color:#fff;
+  padding:10px 16px; font-weight:700;
+}
+
+.cart-btn{ display:flex; align-items:center; gap:8px; }
+
+.cart-badge{
+  background:#fff; color:#99244F; width:20px; height:20px;
+  border-radius:50%; display:flex; align-items:center;
+  justify-content:center; font-size:11px;
+}
+
+/* --- 3. MENU CATEGORIES & BANNER --- */
+.cats{
+  display:flex; gap:10px; overflow-x:auto; padding:15px 20px;
+  background:var(--bg); border-bottom:1px solid var(--border);
+}
+
+.cat-btn{
+  border:1px solid var(--border); padding:10px 18px; border-radius:30px;
+  background:var(--bg); cursor:pointer; color:var(--txt2); font-weight:600;
+}
+
+.cat-btn.active, .cat-btn:hover{
+  background:var(--pink-light); color:var(--pink-dark); border-color:var(--pink);
+}
+
+.banner{
+  margin:20px; padding:20px; border-radius:16px;
+  background:linear-gradient(135deg,#FBEAF0,#fff);
+  display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:15px;
+}
+
+.banner h2{ color:#72243E; }
+.banner p{ color:#993556; margin-top:5px; }
+.banner-code{
+  background:var(--pink); color:#fff; padding:12px 20px;
+  border-radius:12px; font-weight:800; letter-spacing:2px;
+}
+
+/* --- 4. ITEM GRID & CARDS --- */
+.section-head{ padding:0 20px 14px; display:flex; justify-content:space-between; align-items:center; }
+.grid{ padding:0 20px 30px; display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:18px; }
+
+.card{
+  border-radius:16px; overflow:hidden; background:var(--bg);
+  border:1px solid var(--border); transition:0.3s;
+}
+
+.card:hover{ transform:translateY(-5px); box-shadow:0 10px 20px rgba(0,0,0,0.1); }
+.card img{ width:100%; height:180px; object-fit:cover; }
+.card-info{ padding:15px; }
+.card-name{ font-size:16px; font-weight:700; }
+.card-stars{ margin:8px 0; color:#F59E0B; }
+.card-bottom{ display:flex; justify-content:space-between; align-items:center; }
+.price{ font-weight:800; color:var(--pink-dark); }
+
+.add-btn{
+  width:35px; height:35px; border:none; border-radius:50%;
+  background:var(--pink); color:#fff; cursor:pointer; font-size:18px;
+}
+.add-btn:hover{ background:var(--pink-dark); }
+
+/* --- 5. PANELS & OVERLAYS --- */
+.overlay{
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.4); z-index:200;
+}
+.overlay.open{ display:block; }
+
+.cart-panel{
+  position:fixed; top:0; right:-100%; width:350px; height:100%;
+  background:var(--bg); z-index:300; transition:0.4s;
+  display:flex; flex-direction:column; border-left:1px solid var(--border);
+}
+.cart-panel.open{ right:0; }
+
+/* Delivery Modal Specific fixes */
+#deliveryOverlay { z-index: 400; }
+#deliveryModal { z-index: 500; }
+
+.cart-header{
+  padding:20px; border-bottom:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+}
+
+.close-btn{
+  border:none; background:var(--bg2); width:35px; height:35px;
+  border-radius:50%; cursor:pointer;
+}
+
+.cart-items{ flex:1; overflow-y:auto; padding:20px; }
+
+.cart-item{
+  display:flex; gap:10px; margin-bottom:16px;
+  border-bottom:1px solid var(--border); padding-bottom:12px;
+}
+
+.cart-item img{ width:60px; height:60px; border-radius:10px; object-fit:cover; }
+.ci-info{ flex:1; }
+.qty-wrap{ display:flex; align-items:center; gap:8px; }
+
+.qty-btn{
+  width:28px; height:28px; border:none; background:var(--pink-light);
+  cursor:pointer; border-radius:6px; font-weight:700;
+}
+
+.cart-footer{ padding:20px; border-top:1px solid var(--border); }
+.total-row{ display:flex; justify-content:space-between; margin-bottom:15px; font-size:18px; font-weight:800; }
+
+.order-btn{
+  width:100%; border:none; background:linear-gradient(135deg,#D4537E,#99244F);
+  color:#fff; padding:14px; border-radius:12px; font-size:15px;
+  font-weight:700; cursor:pointer;
+}
+
+/* Input styling for delivery */
+#deliveryModal input, #deliveryModal textarea, #deliveryModal select {
+    width:100%; margin:8px 0; padding:12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--txt); outline: none;
+    font-family: inherit;
+}
+#deliveryModal input:focus { border-color: var(--pink); }
+
+.toast{
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  background:#1D9E75; color:#fff; padding:12px 22px;
+  border-radius:30px; font-weight:700; display:none; z-index:999;
+}
+
+footer{ padding:20px; text-align:center; color:var(--txt2); }
+
+@media(max-width:480px){
+  .search-wrap input{ width:150px; }
+  .cart-panel{ width:100%; }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">🍰 CakeTime PRO</div>
+    <div class="header-right">
+      <div class="search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search food..." oninput="renderItems()">
+      </div>
+      <button class="cart-btn" onclick="toggleCart()">
+        <i class="fas fa-shopping-cart"></i> Cart
+        <span class="cart-badge" id="cartCount">0</span>
+      </button>
+      <button class="dark-btn" onclick="toggleDark()" id="darkBtn">🌙</button>
+    </div>
+  </div>
+</header>
+
+<div class="cats">
+  <button class="cat-btn active" onclick="filterCat('all',this)">🍽 All</button>
+  <button class="cat-btn" onclick="filterCat('cake',this)">🍰 Cakes</button>
+  <button class="cat-btn" onclick="filterCat('pizza',this)">🍕 Pizza</button>
+  <button class="cat-btn" onclick="filterCat('drink',this)">🥤 Drinks</button>
+  <button class="cat-btn" onclick="filterCat('sandwich',this)">🥪 Sandwiches</button>
+</div>
+
+<div class="banner">
+  <div>
+    <h2>🎉 First Order Discount!</h2>
+    <p>Use coupon code CAKE15 for 15% OFF</p>
+  </div>
+  <div class="banner-code">CAKE15</div>
+</div>
+
+<div class="section-head">
+  <h3 id="sectionTitle">All Items</h3>
+  <span id="itemCount"></span>
+</div>
+<div class="grid" id="itemGrid"></div>
+
+<footer>Made with ❤️ by Eman · CakeTime PRO</footer>
+
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <h3>🛒 Your Cart</h3>
+    <button class="close-btn" onclick="closeCart()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div class="total-row">
+      <span>Total</span>
+      <span id="totalAmt">Rs 0</span>
+    </div>
+    <button class="order-btn" onclick="openDeliveryModal()">Proceed to Checkout 🛵</button>
+  </div>
+</div>
+
+<div class="overlay" id="deliveryOverlay" onclick="closeDeliveryModal()"></div>
+<div class="cart-panel" id="deliveryModal">
+    <div class="cart-header">
+        <h3>🚚 Delivery Details</h3>
+        <button class="close-btn" onclick="closeDeliveryModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div style="padding:20px; overflow-y:auto; flex:1;">
+        <input type="text" id="dlvName" placeholder="Your Name">
+        <input type="text" id="dlvPhone" placeholder="Phone Number">
+        <textarea id="dlvAddress" placeholder="Full Delivery Address" rows="3"></textarea>
+        <select id="dlvCity">
+            <option value="Karachi">Karachi</option>
+            <option value="Lahore">Lahore</option>
+            <option value="Islamabad">Islamabad</option>
+        </select>
+        <select id="dlvPayment">
+            <option value="COD">Cash on Delivery</option>
+        </select>
+        <textarea id="dlvNotes" placeholder="Special Instructions (Optional)" rows="2"></textarea>
+        
+        <button class="order-btn" style="margin-top:20px;" onclick="confirmOrder()">Confirm & Send to WhatsApp</button>
+        <button onclick="closeDeliveryModal()" style="background:none; color:grey; width:100%; border:none; margin-top:15px; cursor:pointer;">Cancel</button>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* --- JAVASCRIPT LOGIC --- */
+
+const items = [
+  { id:1, name:"Chocolate Cake", price:1200, cat:"cake", img:"https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&q=80", rating:4.8 },
+  { id:2, name:"Strawberry Cake", price:1500, cat:"cake", img:"https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&q=80", rating:4.6 },
+  { id:3, name:"Chicken Pizza", price:2200, cat:"pizza", img:"https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&q=80", rating:4.9 },
+  { id:4, name:"Club Sandwich", price:550, cat:"sandwich", img:"https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&q=80", rating:4.5 },
+  { id:5, name:"Cola Drink", price:150, cat:"drink", img:"https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=400&q=80", rating:4.2 }
+];
+
+let currentCat = "all";
+let cart = {};
+
+function renderItems(){
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = items.filter(item => 
+    (currentCat === 'all' || item.cat === currentCat) && item.name.toLowerCase().includes(q)
+  );
+  document.getElementById('itemCount').innerText = filtered.length + " items";
+  document.getElementById('itemGrid').innerHTML = filtered.map(item => `
+      <div class="card">
+        <img src="${item.img}">
+        <div class="card-info">
+          <div class="card-name">${item.name}</div>
+          <div class="card-stars">⭐ ${item.rating}</div>
+          <div class="card-bottom">
+            <div class="price">Rs ${item.price}</div>
+            <button class="add-btn" onclick="addToCart(${item.id})">+</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+}
+
+function filterCat(cat,btn){
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sectionTitle').innerText = cat === 'all' ? 'All Items' : cat.charAt(0).toUpperCase() + cat.slice(1);
+  renderItems();
+}
+
+function addToCart(id){
+  const item = items.find(i => i.id === id);
+  if(cart[id]){ cart[id].qty++; } 
+  else { cart[id] = {...item, qty:1}; }
+  updateCartUI();
+  showToast(item.name + " added!");
+}
+
+function updateCartUI(){
+  const keys = Object.keys(cart);
+  document.getElementById('cartCount').innerText = keys.reduce((sum,k)=>sum + cart[k].qty,0);
+  const total = keys.reduce((sum,k)=> sum + (cart[k].price * cart[k].qty),0);
+  document.getElementById('totalAmt').innerText = "Rs " + total;
+  const container = document.getElementById('cartItems');
+  if(keys.length === 0){
+    container.innerHTML = `<p style="text-align:center; color:#999; margin-top:20px;">Your cart is empty</p>`;
+    return;
+  }
+  container.innerHTML = keys.map(k => {
+      const item = cart[k];
+      return `
+      <div class="cart-item">
+        <img src="${item.img}">
+        <div class="ci-info">
+          <div><b>${item.name}</b></div>
+          <div>Rs ${item.price}</div>
+        </div>
+        <div class="qty-wrap">
+          <button class="qty-btn" onclick="changeQty(${item.id},-1)">-</button>
+          <span>${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${item.id},1)">+</button>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function changeQty(id,delta){
+  cart[id].qty += delta;
+  if(cart[id].qty <= 0){ delete cart[id]; }
+  updateCartUI();
+}
+
+function toggleCart(){ 
+  document.getElementById('cartPanel').classList.toggle('open'); 
+  document.getElementById('overlay').classList.toggle('open'); 
+}
+function closeCart(){ 
+  document.getElementById('cartPanel').classList.remove('open'); 
+  document.getElementById('overlay').classList.remove('open'); 
+}
+
+function openDeliveryModal() {
+    if(Object.keys(cart).length === 0) { alert("Cart is empty!"); return; }
+    closeCart(); 
+    document.getElementById('deliveryModal').style.right = '0';
+    document.getElementById('deliveryOverlay').style.display = 'block';
+}
+
+function closeDeliveryModal() {
+    document.getElementById('deliveryModal').style.right = '-100%';
+    document.getElementById('deliveryOverlay').style.display = 'none';
+}
+
+function confirmOrder() {
+    const keys = Object.keys(cart);
+    const name = document.getElementById('dlvName').value;
+    const phone = document.getElementById('dlvPhone').value;
+    const address = document.getElementById('dlvAddress').value;
+    const city = document.getElementById('dlvCity').value;
+    const notes = document.getElementById('dlvNotes').value;
+
+    if (!name || !phone || !address) { alert("Please fill all details!"); return; }
+
+    let itemDetails = "";
+    let total = 0;
+    keys.forEach(k => {
+        itemDetails += `• ${cart[k].name} (x${cart[k].qty}) - Rs ${cart[k].price * cart[k].qty}\n`;
+        total += cart[k].price * cart[k].qty;
+    });
+
+    const whatsappNumber = "923001234567"; // CHANGE TO YOUR NUMBER
+    const message = `*--- NEW ORDER ---*\n\n*Name:* ${name}\n*Phone:* ${phone}\n*Address:* ${address}, ${city}\n*Notes:* ${notes || "None"}\n\n*Items:*\n${itemDetails}\n*Total: Rs ${total}*`;
+
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+    
+    cart = {}; updateCartUI(); closeDeliveryModal();
+    showToast("Order Sent! 🚀");
+}
+
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  document.getElementById('darkBtn').innerText = document.body.classList.contains('dark') ? "☀️" : "🌙";
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.innerText = msg; t.style.display = 'block';
+  setTimeout(()=> t.style.display = 'none', 2500);
+}
+function showToast(msg){
+
+  const toast = document.getElementById('toast');
+
+  toast.innerText = msg;
+
+  toast.style.display = 'block';
+
+  setTimeout(()=>{
+    toast.style.display = 'none';
+  },2500);
+}
+
+async function confirmOrder() {
+
+  const keys = Object.keys(cart);
+
+  if (keys.length === 0) {
+    alert("Cart is empty!");
+    return;
+  }
+
+  const orderItems = keys.map(k => ({
+    id: cart[k].id,
+    name: cart[k].name,
+    price: cart[k].price,
+    qty: cart[k].qty
+  }));
+
+  const total = keys.reduce((sum, k) =>
+    sum + (cart[k].price * cart[k].qty), 0
+  );
+
+  try {
+
+    const res = await fetch("https://YOUR-RENDER-URL.onrender.com/place-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        items: orderItems,
+        total: total
+      })
+    });
+
+    const data = await res.json();
+
+    alert(data.message);
+
+    cart = {};
+    updateCartUI();
+    closeCart();
+
+  } catch (err) {
+
+    console.error(err);
+    alert("Order failed ❌");
+
+  }
+}
+
+renderItems();
+renderItems();
+</script>
+</body>
+</html>

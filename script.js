@@ -1,7 +1,7 @@
 /* =======================
    CONFIGURATION
 ======================= */
-const WHATSAPP_PHONE = "03346976292";
+const WHATSAPP_PHONE = "923346976292";
 
 /* =======================
    GLOBAL STATE

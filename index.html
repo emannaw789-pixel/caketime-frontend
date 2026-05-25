@@ -459,7 +459,54 @@ function showToast(msg){
   t.innerText = msg; t.style.display = 'block';
   setTimeout(()=> t.style.display = 'none', 2500);
 }
+async function confirmOrder() {
 
+  const keys = Object.keys(cart);
+
+  if (keys.length === 0) {
+    alert("Cart is empty!");
+    return;
+  }
+
+  const orderItems = keys.map(k => ({
+    id: cart[k].id,
+    name: cart[k].name,
+    price: cart[k].price,
+    qty: cart[k].qty
+  }));
+
+  const total = keys.reduce((sum, k) =>
+    sum + (cart[k].price * cart[k].qty), 0
+  );
+
+  try {
+
+    const res = await fetch("https://YOUR-RENDER-URL.onrender.com/place-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        items: orderItems,
+        total: total
+      })
+    });
+
+    const data = await res.json();
+
+    alert(data.message);
+
+    cart = {};
+    updateCartUI();
+    closeCart();
+
+  } catch (err) {
+
+    console.error(err);
+    alert("Order failed ❌");
+
+  }
+}
 renderItems();
 </script>
 </body>

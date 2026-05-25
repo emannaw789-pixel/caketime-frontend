@@ -67,7 +67,7 @@ function confirmOrder() {
     /* =======================
        SEND TO BACKEND
     ======================= */
-    fetch("http://localhost:5000/place-order", {
+    fetch("https://caketime-backend-production.up.railway.app/orders") {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

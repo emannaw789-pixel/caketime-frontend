@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CakeTime 🍰</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #ffdde1, #ee9ca7);
+        }
+
+        header {
+            background: linear-gradient(90deg, #ff512f, #dd2476);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* SEARCH BAR */
+        .search-box {
+            text-align: center;
+            margin: 15px;
+        }
+
+        .search-box input {
+            width: 60%;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        /* CAKE CONTAINER */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .cake {
+            background: white;
+            width: 250px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s;
+        }
+
+        .cake:hover {
+            transform: scale(1.05);
+        }
+
+        .cake img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .cake-content {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .cake h3 {
+            margin: 5px 0;
+            color: #dd2476;
+        }
+
+        button {
+            padding: 8px 12px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            background: #ff512f;
+            color: white;
+        }
+
+        button:hover {
+            background: #dd2476;
+        }
+
+        /* CART */
+        #cart {
+            background: white;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        #total {
+            font-size: 20px;
+            font-weight: bold;
+            color: #dd2476;
+        }
+
+        .cart-btn {
+            background: #28a745;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    🍰 CakeTime Bakery 🍰
+</header>
+
+<!-- SEARCH BAR -->
+<div class="search-box">
+    <input type="text" id="search" placeholder="Search cakes..." onkeyup="searchCake()">
+</div>
+
+<!-- CAKES -->
+<div class="container" id="cakeList">
+
+    <div class="cake">
+         <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587" />
+
+        <div class="cake-content">
+            <h3>Chocolate Cake</h3>
+            <p>Rs 1200</p>
+            <button onclick="order('Chocolate Cake', 1200)">Add to Cart</button>
+        </div>
+    </div>
+
+    <div class="cake">
+        <img src="https://images.unsplash.com/photo-1519869325930-281384150729" />
+        <div class="cake-content">
+            <h3>Vanilla Cake</h3>
+            <p>Rs 1000</p>
+            <button onclick="order('Vanilla Cake', 1000)">Add to Cart</button>
+        </div>
+    </div>
+
+    <div class="cake">
+    <img src="https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81" />
+        <div class="cake-content">
+            <h3>Strawberry Cake</h3>
+            <p>Rs 1500</p>
+            <button onclick="order('Strawberry Cake', 1500)">Add to Cart</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- CART -->
+<div id="cart">
+    <h2>🛒 Your Cart</h2>
+
+    <ul id="cart-items"></ul>
+
+    <h3 id="total">Total: Rs 0</h3>
+
+    <button class="cart-btn" onclick="checkout()">Checkout on WhatsApp</button>
+</div>
+
+<script>
+let cart = {};
+let total = 0;
+
+/* ADD TO CART */
+function order(cake, price) {
+    if (cart[cake]) {
+        cart[cake].quantity++;
+    } else {
+        cart[cake] = { price, quantity: 1 };
+    }
+    updateCart();
+}
+
+/* UPDATE CART */
+function updateCart() {
+    let cartItems = document.getElementById("cart-items");
+    cartItems.innerHTML = "";
+    total = 0;
+
+    for (let cake in cart) {
+        let item = cart[cake];
+        let itemTotal = item.price * item.quantity;
+        total += itemTotal;
+
+        let li = document.createElement("li");
+
+        li.innerHTML = `
+            ${cake} × ${item.quantity}
+            <button onclick="cart['${cake}'].quantity++; updateCart()">+</button>
+            <button onclick="cart['${cake}'].quantity--; if(cart['${cake}'].quantity<=0){delete cart['${cake}']} updateCart()">-</button>
+            = Rs ${itemTotal}
+        `;
+
+        cartItems.appendChild(li);
+    }
+
+    document.getElementById("total").innerText =
+        "Total: Rs " + total;
+}
+
+/* CHECKOUT */
+function checkout() {
+    if (Object.keys(cart).length === 0) {
+        alert("Cart is empty!");
+        return;
+    }
+
+    let message = "Hello CakeTime 🍰\n\nOrder:\n";
+
+    for (let cake in cart) {
+        let item = cart[cake];
+        message += `${cake} × ${item.quantity} = Rs ${item.price * item.quantity}\n`;
+    }
+
+    message += `\nTotal: Rs ${total}`;
+
+    let phone = "923001234567";
+    let url = "https://wa.me/" + phone + "?text=" + encodeURIComponent(message);
+
+    window.open(url, "_blank");
+}
+
+/* SEARCH FUNCTION */
+function searchCake() {
+    let input = document.getElementById("search").value.toLowerCase();
+    let cakes = document.getElementsByClassName("cake");
+
+    for (let i = 0; i < cakes.length; i++) {
+        let title = cakes[i].getElementsByTagName("h3")[0].innerText.toLowerCase();
+
+        if (title.includes(input)) {
+            cakes[i].style.display = "block";
+        } else {
+            cakes[i].style.display = "none";
+        }
+    }
+}
+</script>
+
+</body>
+</html>

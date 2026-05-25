@@ -440,7 +440,7 @@ function confirmOrder() {
         total += cart[k].price * cart[k].qty;
     });
 
-    const whatsappNumber = "923001234567"; // CHANGE TO YOUR NUMBER
+    const whatsappNumber = "923346976292"; // CHANGE TO YOUR NUMBER
     const message = `*--- NEW ORDER ---*\n\n*Name:* ${name}\n*Phone:* ${phone}\n*Address:* ${address}, ${city}\n*Notes:* ${notes || "None"}\n\n*Items:*\n${itemDetails}\n*Total: Rs ${total}*`;
 
     window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
@@ -481,7 +481,7 @@ async function confirmOrder() {
 
   try {
 
-    const res = await fetch("https://YOUR-RENDER-URL.onrender.com/place-order", {
+    const res = await fetch("https://caketime-backend-production.up.railway.app/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
